@@ -5,8 +5,8 @@ add_subdirectory(external/SDL)
 
 file(GLOB_RECURSE gear3d_engine_SRC src/*.cpp)
 add_library(gear3d_engine STATIC ${gear3d_engine_SRC}
-        src/window.cpp)
+        src/window.cpp include/g3d/scene.h include/g3d/entity.h src/scene.cpp include/g3d/component.h include/g3d/componentarray.h src/componentarray.cpp)
 
 target_include_directories(gear3d_engine PUBLIC include/)
 
-target_link_libraries(gear3d_engine PRIVATE SDL2::SDL2)
+target_link_libraries(gear3d_engine PUBLIC SDL2::SDL2)

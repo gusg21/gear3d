@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(gear3d_example)
+set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(external/gear3d_engine)
 

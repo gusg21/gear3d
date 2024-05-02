@@ -7,7 +7,9 @@
 int main() {
     g3d::PrintVersionInfo();
 
-    g3d::Game game {};
+    g3d::Game game {
+        g3d::WindowSettings {}
+    };
 
     return 0;
 }
