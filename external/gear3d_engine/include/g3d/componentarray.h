@@ -5,6 +5,9 @@
 #ifndef GEAR3D_COMPONENTARRAY_H
 #define GEAR3D_COMPONENTARRAY_H
 
+#include <unordered_map>
+#include <array>
+
 #include "entity.h"
 
 namespace g3d {
@@ -17,6 +20,10 @@ namespace g3d {
     template<typename T>
     class ComponentArray : public IComponentArray {
     public:
+        ComponentArray() = default;
+        ComponentArray(const ComponentArray&) = delete;
+        ComponentArray& operator=(const ComponentArray&) = delete;
+
         void InsertData(EntityId id, T component);
         void RemoveData(EntityId id);
         T& GetData(EntityId id);
@@ -27,7 +34,6 @@ namespace g3d {
         std::unordered_map<EntityId, size_t> m_EntityToIndex;
         std::unordered_map<size_t, EntityId> m_IndexToEntity;
         size_t m_Size = 0;
-
     };
 
     template<typename T>
@@ -56,12 +62,14 @@ namespace g3d {
     }
 
     template<typename T>
-    T& ComponentArray<T>::GetData(EntityId entity)
-    {
-        return m_Components[m_EntityToIndex[entity]];
+    T& ComponentArray<T>::GetData(EntityId id) {
+        return m_Components[m_EntityToIndex[id]];
     }
 
-
+    template<typename T>
+    void ComponentArray<T>::EntityDestroyed(EntityId id) {
+        RemoveData(id);
+    }
 }
 
 #endif //GEAR3D_COMPONENTARRAY_H

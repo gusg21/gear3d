@@ -9,8 +9,9 @@
 #include <queue>
 
 #include "entity.h"
-
-#define SCENE_MAX_NUM_ENTITIES 1024
+#include "entitymanager.h"
+#include "componentmanager.h"
+#include "systemmanager.h"
 
 namespace g3d {
 	class Scene {
@@ -19,19 +20,23 @@ namespace g3d {
 		Scene(const Scene&) = delete;
 		Scene& operator=(const Scene&) = delete;
 
-        [[nodiscard]] EntityId CreateEntity();
+        EntityId CreateEntity();
         void DestroyEntity(EntityId id);
-        void SetEntitySignature(EntityId id, EntitySignature signature);
-        [[nodiscard]] EntitySignature GetEntitySignature(EntityId id);
 
         template<typename T>
         void RegisterComponent();
-        
+        template<typename T>
+        void AddComponent(EntityId id, T component);
+        template<typename T>
+        void RemoveComponent(EntityId id);
+        template<typename T>
+        T& GetComponent(EntityId id);
+        template<typename T>
+        ComponentType GetComponentType();
 
     private:
-		std::queue<EntityId> m_AvailableIds;
-		std::array<EntitySignature, SCENE_MAX_NUM_ENTITIES> m_Entities;
-		uint32_t m_LivingEntities = 0;
+        g3d::EntityManager m_Entities;
+        g3d::ComponentManager m_Components;
 	};
 }
 

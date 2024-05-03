@@ -4,32 +4,41 @@
 
 #include "g3d/scene.h"
 
+#include "g3d/entitymanager.h"
+
 g3d::Scene::Scene()
     : m_Entities()
-    , m_AvailableIds() {
-    for (EntityId id = 0; id < ENTITY_MAX_ENTITIES; id++) {
-        m_AvailableIds.push(id);
-    }
-}
+    , m_Components() { }
 
 g3d::EntityId g3d::Scene::CreateEntity() {
-    EntityId newId = m_AvailableIds.front();
-    m_AvailableIds.pop();
-    m_LivingEntities++;
-
-    return newId;
+    return m_Entities.CreateEntity();
 }
 
 void g3d::Scene::DestroyEntity(g3d::EntityId id) {
-    m_Entities[id].reset();
-    m_AvailableIds.push(id);
-    m_LivingEntities--;
+    m_Entities.DestroyEntity(id);
 }
 
-void g3d::Scene::SetEntitySignature(g3d::EntityId id, g3d::EntitySignature signature) {
-    m_Entities[id] = signature;
+template<typename T>
+void g3d::Scene::RemoveComponent(g3d::EntityId id) {
+    m_Components.RemoveComponent<T>(id);
 }
 
-g3d::EntitySignature g3d::Scene::GetEntitySignature(g3d::EntityId id) {
-    return m_Entities[id];
+template<typename T>
+void g3d::Scene::AddComponent(g3d::EntityId id, T component) {
+    m_Components.AddComponent<T>(id, component);
+}
+
+template<typename T>
+void g3d::Scene::RegisterComponent() {
+    m_Components.RegisterComponent<T>();
+}
+
+template<typename T>
+T& g3d::Scene::GetComponent(g3d::EntityId id) {
+    return m_Components.GetComponent<T>(id);
+}
+
+template<typename T>
+g3d::ComponentType g3d::Scene::GetComponentType() {
+    return m_Components.GetComponentType<T>();
 }
