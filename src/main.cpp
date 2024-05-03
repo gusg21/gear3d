@@ -8,7 +8,8 @@ int SDL_main(int argc, char** argv) {
     g3d::PrintVersionInfo();
 
     g3d::Game game {
-        g3d::WindowSettings {}
+        g3d::WindowSettings {},
+        g3d::RendererSettings {}
     };
 
     return 0;

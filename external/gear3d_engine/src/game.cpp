@@ -8,8 +8,9 @@
 #include "g3d/componentmanager.h"
 
 namespace g3d {
-    Game::Game(const WindowSettings& windowSettings)
+    Game::Game(const WindowSettings& windowSettings, const RendererSettings& rendererSettings)
         : m_Window(windowSettings)
+        , m_Renderer(rendererSettings)
         , m_Systems()
         , m_Scenes() { }
 

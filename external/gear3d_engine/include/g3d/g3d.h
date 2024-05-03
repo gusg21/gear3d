@@ -9,6 +9,8 @@
 
 #include "game.h"
 
+#include "systems/renderer/renderer.h"
+
 #define GEAR3D_VERSION_MAJOR 0
 #define GEAR3D_VERSION_MINOR 1
 #define GEAR3D_BUILD_DATE __DATE__

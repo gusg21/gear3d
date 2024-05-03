@@ -6,9 +6,12 @@
 #define GEAR3D_ENGINE_GAME_H
 
 #include <array>
+
 #include "window.h"
 #include "scene.h"
 #include "scenemanager.h"
+
+#include "systems/renderer/renderer.h"
 
 #define GAME_MAX_NUM_SCENES 32
 
@@ -17,7 +20,7 @@ namespace g3d
 	class Game
 	{
 	 public:
-		explicit Game(const WindowSettings& windowSettings);
+        Game(const WindowSettings& windowSettings, const RendererSettings& rendererSettings);
 		Game(const Game&) = delete;
 		Game& operator=(const Game&) = delete;
 
@@ -32,6 +35,9 @@ namespace g3d
 
 	 private:
 		g3d::Window m_Window;
+
+        g3d::Renderer m_Renderer;
+
         g3d::SystemManager m_Systems;
         g3d::SceneManager m_Scenes;
 	};
