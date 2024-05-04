@@ -7,20 +7,17 @@
 
 #include <cstdio>
 
+#include "builddefs.h"
 #include "game.h"
 
 #include "systems/renderer/renderer.h"
-
-#define GEAR3D_VERSION_MAJOR 0
-#define GEAR3D_VERSION_MINOR 1
-#define GEAR3D_BUILD_DATE __DATE__
-#define GEAR3D_BUILD_TIME __TIME__
 
 namespace g3d
 {
 	static void PrintVersionInfo()
 	{
-		printf("Gear3d v%d.%d built at %s on %s\n", GEAR3D_VERSION_MAJOR, GEAR3D_VERSION_MINOR, GEAR3D_BUILD_TIME,
+		printf("INFO: GEAR3D: Gear3d v%d.%d built at %s on %s\n", GEAR3D_VERSION_MAJOR, GEAR3D_VERSION_MINOR,
+            GEAR3D_BUILD_TIME,
 			GEAR3D_BUILD_DATE);
 	}
 }

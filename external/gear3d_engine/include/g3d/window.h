@@ -21,6 +21,8 @@ namespace g3d {
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
 
+        [[nodiscard]] void* GetInternalHandle() const;
+
     private:
         SDL_Window* m_Window;
     };

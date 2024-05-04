@@ -15,4 +15,8 @@ namespace g3d
 			(int)windowSettings.Width, (int)windowSettings.Height,
 			SDL_VIDEO_VULKAN);
 	}
+
+    void* Window::GetInternalHandle() const {
+        return (void*)m_Window;
+    }
 }

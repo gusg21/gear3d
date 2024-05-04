@@ -12,7 +12,9 @@ namespace g3d {
         : m_Window(windowSettings)
         , m_Renderer(rendererSettings)
         , m_Systems()
-        , m_Scenes() { }
+        , m_Scenes() {
+        m_Renderer.InitializeFromWindow(&m_Window);
+    }
 
     void Game::Run(g3d::Scene* initialScene) {
     }
