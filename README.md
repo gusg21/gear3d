@@ -7,3 +7,5 @@ Using C++11, Vulkan, SDL2, imgui.
 ## Thanks to
 
 * Scott Barrett
+* Alexander Overvoorde
+* Alexandre Tolstenko
