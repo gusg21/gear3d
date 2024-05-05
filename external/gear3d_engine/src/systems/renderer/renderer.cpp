@@ -18,6 +18,7 @@ g3d::Renderer::~Renderer() {
             DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
         }
 
+        vkDestroyDevice(m_Device, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
     }
 }
@@ -132,14 +133,14 @@ void g3d::Renderer::InitializeFromWindow(g3d::Window* window) {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(m_Instance, nullptr, devices.data());
+    vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
 
     if (deviceCount < 1) {
         printf("ERROR: RENDERER: No GPUs support Vulkan!\n");
         return;
     }
 
-    printf("INFO: RENDERER: %d physical devices available.\n", deviceCount);
+    printf("INFO: RENDERER: %d physical devices available\n", deviceCount);
 
     for (const auto& device : devices) {
         if (IsDeviceSuitable(device)) {
@@ -152,6 +153,49 @@ void g3d::Renderer::InitializeFromWindow(g3d::Window* window) {
         printf("ERROR: RENDERER: No GPUs are suitable!\n");
         return;
     }
+
+    // Logical Device
+    QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
+
+    VkDeviceQueueCreateInfo queueCreateInfo { };
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = indices.GraphicsFamily;
+    queueCreateInfo.queueCount = 1;
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    VkPhysicalDeviceFeatures physicalDeviceFeatures { };
+
+    VkDeviceCreateInfo logicalDeviceCreateInfo { };
+    logicalDeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    logicalDeviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    logicalDeviceCreateInfo.queueCreateInfoCount = 1;
+    logicalDeviceCreateInfo.pEnabledFeatures = &physicalDeviceFeatures;
+
+#ifdef GEAR3D_USE_VALIDATION_LAYERS
+    // Use the same layers for compatibility's sake; these should be ignored by all reasonably recent
+    //  Vulkan implementations.
+    logicalDeviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
+    logicalDeviceCreateInfo.enabledLayerCount = validationLayers.size();
+#else
+    // Or don't.
+    logicalDeviceCreateInfo.ppEnabledLayerNames = nullptr;
+    logicalDeviceCreateInfo.enabledLayerCount = 0;
+#endif
+
+    VkResult logicalDeviceCreateResult = vkCreateDevice(
+        m_PhysicalDevice,
+        &logicalDeviceCreateInfo,
+        nullptr,
+        &m_Device
+    );
+    if (logicalDeviceCreateResult != VK_SUCCESS) {
+        printf("ERROR: RENDERER: Unable to create logical device! Error code: %d\n", logicalDeviceCreateResult);
+        return;
+    }
+
+    // Grab the queue created by the logical device
+    vkGetDeviceQueue(m_Device, indices.GraphicsFamily, 0, &m_GraphicsQueue);
 
     // Everything went smoothly, mark the renderer as a-ok.
     printf("INFO: RENDERER: Renderer initialized successfully\n");
@@ -193,7 +237,8 @@ VkBool32 g3d::Renderer::DebugCallback(
 ) {
     switch (messageSeverity) {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-            printf("DEBUG: RENDERER: ");
+//            printf("DEBUG: RENDERER: ");
+            return VK_FALSE;
             break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
             printf("INFO: RENDERER: ");
@@ -243,15 +288,39 @@ VkResult g3d::Renderer::DestroyDebugUtilsMessengerEXT(
 
     return VK_SUCCESS;
 }
+
 bool g3d::Renderer::IsDeviceSuitable(VkPhysicalDevice device) {
-    VkPhysicalDeviceProperties deviceProps { };
-    vkGetPhysicalDeviceProperties(device, &deviceProps);
+//    VkPhysicalDeviceProperties deviceProps { };
+//    vkGetPhysicalDeviceProperties(device, &deviceProps);
+//
+//    VkPhysicalDeviceFeatures deviceFeatures { };
+//    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    VkPhysicalDeviceFeatures deviceFeatures { };
-    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+    g3d::QueueFamilyIndices indices = FindQueueFamilies(device);
 
-    // TODO: checking if needed
+    return indices.IsGraphicsFamilyValid;
+}
 
-    return true;
+g3d::QueueFamilyIndices g3d::Renderer::FindQueueFamilies(VkPhysicalDevice device) {
+    g3d::QueueFamilyIndices indices { };
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    uint32_t i = 0;
+    for (const auto& queueFamily : queueFamilies) {
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            indices.GraphicsFamily = i;
+            indices.IsGraphicsFamilyValid = true;
+            break;
+        }
+
+        i++;
+    }
+
+    return indices;
 }
 

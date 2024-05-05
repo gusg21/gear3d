@@ -5,6 +5,8 @@
 #ifndef GEAR3D_RENDERER_H
 #define GEAR3D_RENDERER_H
 
+#include <vector>
+
 #include <SDL.h>
 #include <vulkan/vulkan.h>
 
@@ -16,6 +18,11 @@
 namespace g3d {
     struct RendererSettings {
         std::string AppName = "Gear3d App";
+    };
+
+    struct QueueFamilyIndices {
+        bool IsGraphicsFamilyValid = false;
+        uint32_t GraphicsFamily = 0;
     };
 
     class Renderer : public System {
@@ -54,6 +61,7 @@ namespace g3d {
             const VkAllocationCallbacks* allocator
         );
         static bool IsDeviceSuitable(VkPhysicalDevice device);
+        static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
         bool m_Ok = false;
         bool m_UsingValidationLayers = false;
@@ -61,10 +69,11 @@ namespace g3d {
 
         g3d::RendererSettings m_Settings;
 
-        VkInstance m_Instance;
-        VkDebugUtilsMessengerEXT m_DebugMessenger;
+        VkInstance m_Instance = VK_NULL_HANDLE;
+        VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
         VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
-
+        VkDevice m_Device = VK_NULL_HANDLE;
+        VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
     };
 }
 
