@@ -32,10 +32,39 @@ namespace g3d {
         [[nodiscard]] bool IsOk() const { return m_Ok; }
 
     private:
+        static std::vector<const char*> GetRequiredExtensions(
+            g3d::Window* window, bool requiresPortability,
+            bool requiresDebugUtils
+        );
+        static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* callbackData,
+            void* userData
+        );
+        static VkResult CreateDebugUtilsMessengerEXT(
+            VkInstance instance,
+            const VkDebugUtilsMessengerCreateInfoEXT* createInfo,
+            const VkAllocationCallbacks* allocator,
+            VkDebugUtilsMessengerEXT* debugMessenger
+        );
+        static VkResult DestroyDebugUtilsMessengerEXT(
+            VkInstance instance,
+            VkDebugUtilsMessengerEXT debugMessenger,
+            const VkAllocationCallbacks* allocator
+        );
+        static bool IsDeviceSuitable(VkPhysicalDevice device);
+
         bool m_Ok = false;
+        bool m_UsingValidationLayers = false;
+        bool m_UsingPortabilityExtension = false;
 
         g3d::RendererSettings m_Settings;
+
         VkInstance m_Instance;
+        VkDebugUtilsMessengerEXT m_DebugMessenger;
+        VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
+
     };
 }
 

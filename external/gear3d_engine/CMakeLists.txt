@@ -23,6 +23,13 @@ endif ()
 if (WIN32)
     target_compile_definitions(gear3d_engine PUBLIC WIN32)
 endif ()
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Debug defines
+    target_compile_definitions(gear3d_engine PUBLIC GEAR3D_USE_VALIDATION_LAYERS)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    # Release defines
+endif()
 
 # Library includes
 target_include_directories(gear3d_engine PUBLIC include/)
