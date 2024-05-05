@@ -10,6 +10,8 @@ set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(external/glm)
 
 # System-wide SDKs (developer must install!)
+message("Vulkan SDK: " $ENV{VULKAN_SDK})
+message("void* size: " ${CMAKE_SIZEOF_VOID_P})
 find_package(Vulkan REQUIRED)
 
 # Library definition

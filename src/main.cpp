@@ -3,6 +3,9 @@
 //
 
 #include "g3d/g3d.h"
+#ifdef WIN32
+#include <SDL_main.h>
+#endif
 
 // Windows entry point
 int SDL_main(int argc, char** argv) {
@@ -21,7 +24,9 @@ int SDL_main(int argc, char** argv) {
     return 0;
 }
 
+#ifdef APPLE
 // macOS (only?) entry point, wraps Windows entry point
 int main(int argc, char** argv) {
     return SDL_main(argc, argv); // TODO: is there a better option? this is only needed on macOS (afaik) - gus
 }
+#endif
